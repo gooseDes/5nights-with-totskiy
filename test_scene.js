@@ -4,6 +4,7 @@ import * as CANNON from 'https://cdn.skypack.dev/cannon-es';
 
 import * as player_controller from "./player_controller.js";
 import * as item_controller from "./item_controller.js";
+import * as enemy_controller from './enemy_controller.js';
 
 const clock = new THREE.Clock();
 
@@ -77,14 +78,14 @@ flashlight.shadow.mapSize.height = 1024;
 flashlight.shadow.bias = -0.005;
 flashlight.target.position.set(0, 0, -1);
 
-var totksiy;
+var totskiy;
 
 loader.load('models/totskiy.glb', (gltf) => {
-  totksiy = gltf.scene;
-  totksiy.position.set(116, -1.5, 0);
-  totksiy.rotation.set(0, -Math.PI / 2, 0);
-  scene.add(totksiy);
-  const mixer = new THREE.AnimationMixer(totksiy);
+  totskiy = gltf.scene;
+  totskiy.position.set(116, -1.5, 0);
+  totskiy.rotation.set(0, -Math.PI / 2, 0);
+  scene.add(totskiy);
+  const mixer = new THREE.AnimationMixer(totskiy);
 
   const clip = THREE.AnimationClip.findByName(gltf.animations, 'test_anim');
 
@@ -107,7 +108,13 @@ loader.load('models/totskiy.glb', (gltf) => {
   animate();
 });
 
+while (!totskiy) {
+  await new Promise(resolve => setTimeout(resolve, 10));
+}
+
 export const player = new player_controller.PlayerController(camera, flashlight, scene, renderer, world);
+export const enemy = new enemy_controller.EnemyController(scene, renderer, world, totskiy);
+enemy.body.position.set(116, 5, 0);
 
 const cube = new item_controller.ItemController(scene, world);
 var cubes = [];
@@ -128,6 +135,8 @@ export var running = false;
 export function update() {
   world.step(1 / 60);
   player.update();
+  enemy.target.copy(player.camera.position);
+  enemy.update();
   cube.update();
   for (let i = 0; i < cubes.length; i++) {
     cubes[i].update();
@@ -147,6 +156,8 @@ export function start() {
       addCollider(world, gltf.scene);
       scene.add(gltf.scene);
   });
+
+  enemy.start();
   
   const moonLight = new THREE.DirectionalLight(0x8888ff, 0.2);
   moonLight.position.set(5, 10, -10);

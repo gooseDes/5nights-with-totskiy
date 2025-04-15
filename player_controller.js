@@ -21,7 +21,7 @@ export class PlayerController {
     this.pitch = 0;
 
     this.isTouchDevice = 'ontouchstart' in window;
-    this.moveSpeed = 5;
+    this.moveSpeed = 10;
 
     this.lastTouchX = null;
     this.lastTouchY = null;
