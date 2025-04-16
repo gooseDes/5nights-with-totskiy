@@ -34,7 +34,7 @@ export class PlayerController {
     this.playerBody = new CANNON.Body({
       mass: 3,
       fixedRotation: true,
-      linearDamping: 0.9
+      linearDamping: 0.5
     });
 
     this.playerBody.addShape(sphereShape, new CANNON.Vec3(0, height / 2 - radius, 0));
@@ -234,11 +234,14 @@ export class PlayerController {
     const input = this.getInputDirection();
 
     if (input.lengthSq() > 0) {
-      const cameraYawQuat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
-      input.applyQuaternion(cameraYawQuat).normalize();
+        const cameraYawQuat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
+        input.applyQuaternion(cameraYawQuat).normalize();
 
-      this.playerBody.position.x += input.x * this.moveSpeed * dt;
-      this.playerBody.position.z += input.z * this.moveSpeed * dt;
+        this.playerBody.velocity.x = input.x * this.moveSpeed;
+        this.playerBody.velocity.z = input.z * this.moveSpeed;
+    } else {
+        this.playerBody.velocity.x *= 0.8;
+        this.playerBody.velocity.z *= 0.8;
     }
 
     this.groundSensor.position.set(

@@ -11,7 +11,7 @@ export class EnemyController {
     this.yaw = 0;
     this.pitch = 0;
 
-    this.moveSpeed = 5;
+    this.moveSpeed = 10;
 
     this.radius = 0.5;
     this.height = 2;
@@ -23,7 +23,7 @@ export class EnemyController {
     this.body = new CANNON.Body({
       mass: 3,
       fixedRotation: true,
-      linearDamping: 0.99
+      linearDamping: 0.1
     });
 
     this.body.addShape(shape1, new CANNON.Vec3(0, height / 2 - radius, 0));
@@ -38,25 +38,25 @@ export class EnemyController {
   }
 
   update() {
-    const now = performance.now();
-    const dt = (now - this.lastUpdateTime) / 1000;
-    this.lastUpdateTime = now;
-
-    const direction = new THREE.Vector3().subVectors(this.target, this.mesh.position).normalize();
-    const velocity = direction.multiplyScalar(this.moveSpeed * 150 * dt);
-
-    this.body.velocity.x = velocity.x;
-    this.body.velocity.z = velocity.z;
+    const direction = new THREE.Vector3().subVectors(this.target, this.body.position);
+    direction.y = 0;
+    if (direction.lengthSq() > 0.001) {
+        direction.normalize();
+        this.body.velocity.x = direction.x * this.moveSpeed;
+        this.body.velocity.z = direction.z * this.moveSpeed;
+    } else {
+        this.body.velocity.x = 0;
+        this.body.velocity.z = 0;
+    }
 
     this.mesh.position.copy(this.body.position);
     this.mesh.position.y -= this.height / 2;
 
     const lookAtTarget = new THREE.Quaternion();
-    const up = new THREE.Vector3(0, 1, 0);
     const forward = new THREE.Vector3(0, 0, 1);
     lookAtTarget.setFromUnitVectors(forward, direction.clone().setY(0).normalize());
     this.mesh.quaternion.copy(lookAtTarget);
-}
+  }
 
   start() {
     this.scene.add(this.mesh);

@@ -1,204 +1,103 @@
 const THREE = await import('https://esm.sh/three@0.175.0');
-const { GLTFLoader } = await import('https://esm.sh/three@0.175.0/examples/jsm/loaders/GLTFLoader.js');
-import * as CANNON from 'https://cdn.skypack.dev/cannon-es';
+import * as utils from './utils.js';
 
-import * as player_controller from "./player_controller.js";
-import * as item_controller from "./item_controller.js";
-import * as enemy_controller from './enemy_controller.js';
+import { Scene } from "./scene.js";
+import { PlayerController } from "./player_controller.js";
+import { ItemController } from "./item_controller.js";
+import { EnemyController } from './enemy_controller.js';
 
-const clock = new THREE.Clock();
+export class TestScene extends Scene {
+  constructor() {
+    super(true, true, 'models/test_scene.glb');
+    this.scene.background = new THREE.Color(0x111122);
+    this.scene.fog = new THREE.Fog(0x111122, 10, 50);
+    
+    this.camera.position.set(0, 2, 0);
+        
+    this.ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+    this.to_add_to_scene.push(this.ambientLight);
+    
+    this.flashlight = new THREE.SpotLight(0xffffff, 10, 100, Math.PI / 6, 0.2, 1.5);
+    this.flashlight.castShadow = true;
+    this.flashlight.shadow.mapSize.width = 1024;
+    this.flashlight.shadow.mapSize.height = 1024;
+    this.flashlight.shadow.bias = -0.005;
+    this.flashlight.target.position.set(0, 0, -1);
+    this.to_add_to_scene.push(this.flashlight);
+    this.to_add_to_scene.push(this.flashlight.target);
 
-function addCollider(world, mesh) {
-  mesh.updateMatrixWorld(true);
-  mesh.traverse((child) => {
-    if (child.isMesh && child.geometry) {
-      const shape = createTrimesh(child.geometry, child);
-      if (shape) {
-        const body = new CANNON.Body({ mass: 0 });
-        body.collisionResponse = true;
-        body.addShape(shape);
-        body.position.set(0, 0, 0);
-        const physicsMaterial = new CANNON.Material('sceneMaterial');
-        const contactMaterial = new CANNON.ContactMaterial(physicsMaterial, physicsMaterial, {
-          friction: 0.01,
-          restitution: 0,
-        });
-        world.addContactMaterial(contactMaterial);
-        body.material = physicsMaterial;
-        world.addBody(body);
+    this.moonLight = new THREE.DirectionalLight(0x8888ff, 0.2);
+    this.moonLight.position.set(5, 10, -10);
+    this.moonLight.castShadow = true;
+    this.moonLight.shadow.mapSize.width = 1024;
+    this.moonLight.shadow.mapSize.height = 1024;
+    this.moonLight.shadow.bias = -0.002;
+    this.to_add_to_scene.push(this.moonLight);
+    
+    utils.loader.load('models/totskiy.glb', (gltf) => {
+      this.totskiy = gltf.scene;
+      this.totskiy.position.set(116, -1.5, 0);
+      this.totskiy.rotation.set(0, -Math.PI / 2, 0);
+      this.to_add_to_scene.push(this.totskiy);
+      const mixer = new THREE.AnimationMixer(this.totskiy);
+    
+      const clip = THREE.AnimationClip.findByName(gltf.animations, 'test_anim');
+    
+      if (clip) {
+          const action = mixer.clipAction(clip);
+    
+          action.setLoop(THREE.LoopRepeat);
+          action.play();
+      } else {
+          console.warn('Animation clip not found in the loaded model.');
       }
-    }
-  });
-}
 
-function createTrimesh(geometry, mesh) {
-  if (!geometry.attributes.position) return null;
+      this.enemy = new EnemyController(this.scene, this.renderer, this.world, this.totskiy);
+      this.enemy.mesh.castShadow = true;
+      this.enemy.mesh.receiveShadow = true;
+      this.enemy.body.position.set(116, 2, 0);
+      this.enemy.start();
+      //this.to_update.push(this.enemy);
+    
+      const animate = () => {
+          requestAnimationFrame(animate);
+          const delta = utils.clock.getDelta();
+          mixer.update(delta);
+          this.renderer.render(this.scene, this.camera);
+      }
+    
+      animate();
+    });
+    
+    this.player = new PlayerController(this.camera, this.flashlight, this.scene, this.renderer, this.world);
 
-  const cloned = geometry.clone();
-  cloned.applyMatrix4(mesh.matrixWorld);
+    this.to_start.push(this.player);
+    this.to_update.push(this.player);
+    
+    this.test_item = new ItemController(this.scene, this.world);
+    this.to_update.push(this.test_item);
+    this.test_items = [];
 
-  const pos = cloned.attributes.position.array;
-  const idx = cloned.index ? cloned.index.array : generateIndex(cloned);
-
-  return new CANNON.Trimesh(pos, idx);
-}
-
-function generateIndex(geometry) {
-  const count = geometry.attributes.position.count;
-  const index = new Uint16Array(count);
-  for (let i = 0; i < count; i++) index[i] = i;
-  return index;
-}
-
-
-export const world = new CANNON.World({
-  gravity: new CANNON.Vec3(0, -9.82, 0)
-});
-
-export const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x111122);
-scene.fog = new THREE.Fog(0x111122, 10, 50);
-
-export const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 2, 0);
-
-export const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-const loader = new GLTFLoader();
-
-const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
-
-export const flashlight = new THREE.SpotLight(0xffffff, 10, 100, Math.PI / 6, 0.2, 1.5);
-flashlight.castShadow = true;
-flashlight.shadow.mapSize.width = 1024;
-flashlight.shadow.mapSize.height = 1024;
-flashlight.shadow.bias = -0.005;
-flashlight.target.position.set(0, 0, -1);
-
-var totskiy;
-
-loader.load('models/totskiy.glb', (gltf) => {
-  totskiy = gltf.scene;
-  totskiy.position.set(116, -1.5, 0);
-  totskiy.rotation.set(0, -Math.PI / 2, 0);
-  scene.add(totskiy);
-  const mixer = new THREE.AnimationMixer(totskiy);
-
-  const clip = THREE.AnimationClip.findByName(gltf.animations, 'test_anim');
-
-  if (clip) {
-      const action = mixer.clipAction(clip);
-
-      action.setLoop(THREE.LoopRepeat);
-      action.play();
-  } else {
-      console.warn('Animation clip not found in the loaded model.');
+    utils.loader.load('models/monkey.glb', (gltf) => {
+      for (let i = 0; i < 50; i++) {
+        //const obj = new ItemController(this.scene, this.world, Math.random()/3 + 0.2, new THREE.Vector3(Math.random() * 10 - 5, Math.random() * 10 + 5, Math.random() * 10 - 5), gltf.scene.children[0].clone());
+        //this.to_update.push(obj);
+        //this.test_items.push(obj);
+      }
+    });
+    
+    utils.loader.load('models/ball.glb', (gltf) => {
+      for (let i = 0; i < 50; i++) {
+        //const obj = new ItemController(this.scene, this.world, Math.random()/3 + 0.2, new THREE.Vector3(Math.random() * 10 - 5, Math.random() * 10 + 5, Math.random() * 10 - 5), gltf.scene.children[0].clone());
+        //this.to_update.push(obj);
+        //this.test_items.push(obj);
+      }
+    });
   }
 
-  function animate() {
-      requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      mixer.update(delta);
-      renderer.render(scene, camera);
-  }
-
-  animate();
-});
-
-while (!totskiy) {
-  await new Promise(resolve => setTimeout(resolve, 10));
-}
-
-export const player = new player_controller.PlayerController(camera, flashlight, scene, renderer, world);
-export const enemy = new enemy_controller.EnemyController(scene, renderer, world, totskiy);
-enemy.body.position.set(116, 5, 0);
-
-const cube = new item_controller.ItemController(scene, world);
-var cubes = [];
-loader.load('models/monkey.glb', (gltf) => {
-  for (let i = 0; i < 50; i++) {
-    cubes.push(new item_controller.ItemController(scene, world, Math.random()/3 + 0.2, new THREE.Vector3(Math.random() * 10 - 5, Math.random() * 10 + 5, Math.random() * 10 - 5), gltf.scene.children[0].clone()));
-  }
-});
-
-loader.load('models/ball.glb', (gltf) => {
-  for (let i = 0; i < 50; i++) {
-    cubes.push(new item_controller.ItemController(scene, world, Math.random()/3 + 0.2, new THREE.Vector3(Math.random() * 10 - 5, Math.random() * 10 + 5, Math.random() * 10 - 5), gltf.scene.children[0].clone()));
-  }
-});
-
-export var running = false;
-
-export function update() {
-  world.step(1 / 60);
-  player.update();
-  enemy.target.copy(player.camera.position);
-  enemy.update();
-  cube.update();
-  for (let i = 0; i < cubes.length; i++) {
-    cubes[i].update();
+  update() {
+    super.update();
+    this.enemy.target.copy(this.player.playerBody.position);
+    console.log(this.enemy.body.velocity);
   }
 }
-
-export function render() {
-  renderer.render(scene, camera);
-}
-
-export function start() {
-  running = true;
-  document.body.appendChild(renderer.domElement);
-
-  loader.load('models/test_scene.glb', (gltf) => {
-      gltf.scene.position.set(0, -2, 0)
-      addCollider(world, gltf.scene);
-      scene.add(gltf.scene);
-  });
-
-  enemy.start();
-  
-  const moonLight = new THREE.DirectionalLight(0x8888ff, 0.2);
-  moonLight.position.set(5, 10, -10);
-  moonLight.castShadow = true;
-  moonLight.shadow.mapSize.width = 1024;
-  moonLight.shadow.mapSize.height = 1024;
-  moonLight.shadow.bias = -0.002;
-  scene.add(moonLight);
-
-  scene.add(ambientLight);
-  scene.add(flashlight);
-  scene.add(flashlight.target);
-
-  document.getElementById('pointer').style.visibility = 'visible';
-}
-
-export function stop() {
-  running = false;
-  document.body.removeChild(renderer.domElement);
-}
-
-function fullScreenAndPointerLock() {
-  if (!('ontouchstart' in window)) {
-    renderer.domElement.requestPointerLock();
-  }
-  if (document.documentElement.requestFullscreen) {
-    document.documentElement.requestFullscreen();
-  } else if (document.documentElement.mozRequestFullScreen) {
-      document.documentElement.mozRequestFullScreen();
-  } else if (document.documentElement.webkitRequestFullscreen) {
-      document.documentElement.webkitRequestFullscreen();
-  } else if (document.documentElement.msRequestFullscreen) {
-      document.documentElement.msRequestFullscreen();
-  }
-};
-
-window.addEventListener('click', fullScreenAndPointerLock);
-window.addEventListener('touchstart', fullScreenAndPointerLock);
-
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});

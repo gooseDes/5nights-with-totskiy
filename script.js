@@ -1,11 +1,15 @@
 import * as menu_scene from "./menu_scene.js";
-import * as test_scene from "./test_scene.js";
+import { TestScene } from "./test_scene.js";
 
 var scenes = {};
+
 scenes['menu'] = menu_scene;
-scenes['test'] = test_scene;
 
 menu_scene.start();
+
+const test_scene = new TestScene();
+
+scenes['test'] = test_scene;
 
 const playButton = document.getElementById('play-button');
 
@@ -18,6 +22,7 @@ function handlePlayButton(e) {
     setTimeout(() => {
         playButton.style.display = 'none';
         menu_scene.stop();
+        
         test_scene.start();
     }, 1000);
 }
