@@ -21,7 +21,7 @@ export class PlayerController {
     this.pitch = 0;
 
     this.isTouchDevice = 'ontouchstart' in window;
-    this.moveSpeed = 10;
+    this.moveSpeed = 12;
 
     this.lastTouchX = null;
     this.lastTouchY = null;
@@ -74,6 +74,8 @@ export class PlayerController {
     });
 
     this.inventory = [];
+
+    this.since_started_walking = 0;
 
     this.lastUpdateTime = performance.now();
     this.start();
@@ -239,9 +241,11 @@ export class PlayerController {
 
         this.playerBody.velocity.x = input.x * this.moveSpeed;
         this.playerBody.velocity.z = input.z * this.moveSpeed;
+        this.since_started_walking += dt;
     } else {
         this.playerBody.velocity.x *= 0.8;
         this.playerBody.velocity.z *= 0.8;
+        this.since_started_walking = 0;
     }
 
     this.groundSensor.position.set(
@@ -255,14 +259,13 @@ export class PlayerController {
     }
 
     this.camera.position.copy(this.playerBody.position);
-    this.flashlight.position.copy(this.playerBody.position);
+    const flashlightPos = this.camera.position.clone().add(this.camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(0.5));
+    this.flashlight.position.copy(flashlightPos);
     this.flashlight.target.position.copy(
       this.camera.getWorldDirection(new THREE.Vector3()).add(this.playerBody.position)
     );
 
-    if (this.keyState.space) {
-      console.log(this.camera.position);
-    }
+    this.camera.position.y += (Math.sin(this.since_started_walking * 10) - 0.5) * 0.04;
   }
 
   getInputDirection() {

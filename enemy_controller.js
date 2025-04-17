@@ -11,7 +11,7 @@ export class EnemyController {
     this.yaw = 0;
     this.pitch = 0;
 
-    this.moveSpeed = 10;
+    this.moveSpeed = 8;
 
     this.radius = 0.5;
     this.height = 2;

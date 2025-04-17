@@ -78,7 +78,6 @@
       pointer-events: none;
       width: 1svh;
       aspect-ratio: 1/1;
-      visibility: hidden;
     }
     #throw-button {
       z-index: 998;
@@ -97,6 +96,10 @@
       font-family: 'Baloo 2';
       color: rgba(255, 255, 255, 0.8);
       visibility: hidden;
+    }
+    #jumpscare {
+      background-size: 100% 100%;
+      transition: opacity 0.5s ease-in-out;
     }
     #pick-button {
       z-index: 999;
@@ -132,6 +135,7 @@
   <div class="full_center">
     <div id="pointer"></div>
   </div>
+  <div class="full_center" id="jumpscare"></div>
   <div class="full_center">
     <button id="play-button"><i class="fa-solid fa-play"></i> Play</button>
   </div>
