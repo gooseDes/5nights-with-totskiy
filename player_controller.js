@@ -114,7 +114,7 @@ export class PlayerController {
         const dx = touch.clientX - this.lastTouchX;
         const dy = touch.clientY - this.lastTouchY;
   
-        const sens = 0.002;
+        const sens = 0.005;
         this.yaw -= dx * sens;
         this.pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, this.pitch - dy * sens));
         this.updateCameraRotation();
