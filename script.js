@@ -13,6 +13,27 @@ const test_scene = new TestScene();
 
 scenes['test'] = test_scene;
 
+document.querySelectorAll('.top-panel-button').forEach((button) => {
+    const handleEnter = () => {
+        Array.from(button.children).forEach((child) => {
+            child.classList.add('fa-bounce');
+        });
+    };
+
+    const handleLeave = () => {
+        Array.from(button.children).forEach((child) => {
+            child.classList.remove('fa-bounce');
+        });
+    };
+
+    button.addEventListener('mouseenter', handleEnter);
+    button.addEventListener('mouseleave', handleLeave);
+
+    button.addEventListener('touchstart', handleEnter);
+    button.addEventListener('touchend', handleLeave);
+});
+
+
 const playButton = document.getElementById('play-button');
 const menu = document.getElementById('menu');
 
