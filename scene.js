@@ -32,7 +32,7 @@ export class Scene {
         this.to_add_to_scene = [];
 
         utils.loader.load(this.default_mesh_path, (gltf) => {
-            gltf.scene.position.set(0, -2, 0)
+            //gltf.scene.position.set(0, -2, 0)
             gltf.scene.traverse((child) => {
                 if (child.isMesh) {
                     child.castShadow = true;

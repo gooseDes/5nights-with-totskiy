@@ -8,7 +8,7 @@ import { EnemyController } from './enemy_controller.js';
 
 export class TestScene extends Scene {
   constructor() {
-    super(true, true, 'models/test_scene.glb');
+    super(true, true, 'models/scenes/test/scene.glb');
     this.scene.background = new THREE.Color(0x111122);
     this.scene.fog = new THREE.Fog(0x111122, 10, 50);
     
@@ -45,10 +45,10 @@ export class TestScene extends Scene {
           console.warn('Animation clip not found in the loaded model.');
       }
 
-      this.enemy = new EnemyController(this.scene, this.renderer, this.world, this.totskiy);
+      this.enemy = new EnemyController(this.scene, this.renderer, this.world, this.totskiy, "models/scenes/test/navmesh.glb");
       this.enemy.mesh.castShadow = true;
       this.enemy.mesh.receiveShadow = true;
-      this.enemy.body.position.set(116, 2, 0);
+      this.enemy.body.position.set(100, 2, 0);
       this.enemy.start();
       this.to_update.push(this.enemy);
 
@@ -56,6 +56,7 @@ export class TestScene extends Scene {
         if (event.body === this.enemy.body) {
           this.player.playerBody.position.set(0, 5, 0);
           this.player.playerBody.velocity.set(0, 0, 0);
+          this.jumpscareSound.volume = 0.1;
           this.jumpscareSound.play();
           document.getElementById('jumpscare').style.background = 'url("images/jumpscare.png") no-repeat center center';
           document.getElementById('jumpscare').style.backgroundSize = '100% 100%';
@@ -109,6 +110,10 @@ export class TestScene extends Scene {
 
   update() {
     super.update();
-    this.enemy.target.copy(this.player.playerBody.position);
+    this.enemy.setTarget(this.player.playerBody.position);
+    if (this.player.keyState.space) {
+      this.enemy.setTarget(new THREE.Vector3(0, 0, 0));
+      console.log(this.enemy.body.position);
+    }
   }
 }
