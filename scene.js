@@ -15,6 +15,7 @@ export class Scene {
         this.default_mesh_path = default_mesh_path;
         this.running = false;
         this.lock_pointer = lock_pointer;
+        this.default_mesh = null;
         document.body.appendChild(this.renderer.domElement);
 
         if (physics) {
@@ -31,17 +32,28 @@ export class Scene {
         this.to_start = [];
         this.to_add_to_scene = [];
 
-        utils.loader.load(this.default_mesh_path, (gltf) => {
-            //gltf.scene.position.set(0, -2, 0)
-            gltf.scene.traverse((child) => {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
+        utils.loader.load(
+            this.default_mesh_path,
+            (gltf) => {
+                //gltf.scene.position.set(0, -2, 0)
+                this.default_mesh = gltf.scene;
+                gltf.scene.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+                if (this.physics) {
+                    utils.addCollider(this.world, gltf.scene);
                 }
-            });
-            utils.addCollider(this.world, gltf.scene);
-            this.to_add_to_scene.push(gltf.scene);
-        });
+                this.to_add_to_scene.push(gltf.scene);
+                if (this.running) this.scene.add(gltf.scene);
+            },
+            undefined,
+            (error) => {
+                console.error("Failed to load model:", this.default_mesh_path, error);
+            }
+        );
     }
 
     start() {

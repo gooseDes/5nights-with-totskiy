@@ -1,7 +1,9 @@
-import * as menu_scene from "./menu_scene.js";
+import { MenuScene } from "./menu_scene.js";
 import { TestScene } from "./test_scene.js";
 
 var scenes = {};
+
+const menu_scene = new MenuScene();
 
 scenes['menu'] = menu_scene;
 
@@ -12,6 +14,7 @@ const test_scene = new TestScene();
 scenes['test'] = test_scene;
 
 const playButton = document.getElementById('play-button');
+const menu = document.getElementById('menu');
 
 playButton.addEventListener('click', handlePlayButton);
 playButton.addEventListener('touchstart', handlePlayButton);
@@ -21,6 +24,7 @@ function handlePlayButton(e) {
     playButton.classList.add('play-button-anim');
     setTimeout(() => {
         playButton.style.display = 'none';
+        menu.style.display = 'none';
         menu_scene.stop();
         
         test_scene.start();
