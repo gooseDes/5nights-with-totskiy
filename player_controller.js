@@ -21,13 +21,13 @@ export class PlayerController {
     this.pitch = 0;
 
     this.isTouchDevice = 'ontouchstart' in window;
-    this.moveSpeed = 12;
+    this.moveSpeed = 15;
 
     this.lastTouchX = null;
     this.lastTouchY = null;
     this.isLooking = false;
 
-    const radius = 0.3, height = 1.4;
+    const radius = 1, height = 1.4;
     const sphereShape = new CANNON.Sphere(radius);
     const cylinderShape = new CANNON.Cylinder(radius, radius, height - 2 * radius, 8);
 
@@ -98,36 +98,51 @@ export class PlayerController {
   }
 
   setupTouchLookControls() {
+    this.lookTouchId = null;
+
     window.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 1 && !this.joystickZone.contains(e.touches[0].target)) {
-        const touch = e.touches[0];
-        this.lastTouchX = touch.clientX;
-        this.lastTouchY = touch.clientY;
-        this.isLooking = true;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const touch = e.changedTouches[i];
+        if (!this.joystickZone.contains(document.elementFromPoint(touch.clientX, touch.clientY))) {
+          if (this.lookTouchId === null) {
+            this.lookTouchId = touch.identifier;
+            this.lastTouchX = touch.clientX;
+            this.lastTouchY = touch.clientY;
+            this.isLooking = true;
+          }
+        }
       }
-      e.preventDefault();
     });
-  
+
     window.addEventListener('touchmove', (e) => {
-      if (this.isLooking && e.touches.length === 1) {
-        const touch = e.touches[0];
-        const dx = touch.clientX - this.lastTouchX;
-        const dy = touch.clientY - this.lastTouchY;
-  
-        const sens = 0.005;
-        this.yaw -= dx * sens;
-        this.pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, this.pitch - dy * sens));
-        this.updateCameraRotation();
-  
-        this.lastTouchX = touch.clientX;
-        this.lastTouchY = touch.clientY;
+      if (this.isLooking && this.lookTouchId !== null) {
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          const touch = e.changedTouches[i];
+          if (touch.identifier === this.lookTouchId) {
+            const dx = touch.clientX - this.lastTouchX;
+            const dy = touch.clientY - this.lastTouchY;
+
+            const sens = 0.005;
+            this.yaw -= dx * sens;
+            this.pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, this.pitch - dy * sens));
+            this.updateCameraRotation();
+
+            this.lastTouchX = touch.clientX;
+            this.lastTouchY = touch.clientY;
+            break;
+          }
+        }
       }
-      e.preventDefault();
     });
-  
+
     window.addEventListener('touchend', (e) => {
-      this.isLooking = false;
-      e.preventDefault();
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const touch = e.changedTouches[i];
+        if (touch.identifier === this.lookTouchId) {
+          this.isLooking = false;
+          this.lookTouchId = null;
+        }
+      }
     });
   }
 
