@@ -66,3 +66,8 @@ export function closePopup(popupId) {
     }, 300);
   }
 }
+
+export const global = {
+  volume: localStorage.getItem('volume'),
+  graphics: localStorage.getItem('graphics'),
+}

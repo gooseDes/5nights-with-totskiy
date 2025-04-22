@@ -55,6 +55,18 @@ const settings_button = document.getElementById('settings-button');
 settings_button.addEventListener('click', (e) => {
     e.preventDefault();
     utils.openPopup('settings-popup');
+    const volume_slider = document.getElementById('volume-slider');
+    volume_slider.value = utils.global.volume * 100;
+    volume_slider.addEventListener('input', (e) => {
+        utils.global.volume = e.target.value / 100;
+        localStorage.setItem('volume', utils.global.volume);
+    });
+    const graphics_slider = document.getElementById('graphics-slider');
+    graphics_slider.value = utils.global.graphics * 100;
+    graphics_slider.addEventListener('input', (e) => {
+        utils.global.graphics = e.target.value / 100;
+        localStorage.setItem('graphics', utils.global.graphics);
+    });
 });
 
 function handlePlayButton(e) {
