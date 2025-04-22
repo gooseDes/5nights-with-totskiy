@@ -1,5 +1,6 @@
 import { MenuScene } from "./menu_scene.js";
 import { TestScene } from "./test_scene.js";
+import * as utils from './utils.js';
 
 var scenes = {};
 
@@ -33,12 +34,28 @@ document.querySelectorAll('.top-panel-button').forEach((button) => {
     button.addEventListener('touchend', handleLeave);
 });
 
+document.querySelectorAll('.popup-close').forEach((button) => {
+    button.addEventListener('click', (e) => {
+        e.preventDefault();
+        const popup = button.closest('.popup');
+        if (popup) {
+            utils.closePopup(popup.id);
+        }
+    });
+});
+
 
 const playButton = document.getElementById('play-button');
 const menu = document.getElementById('menu');
 
 playButton.addEventListener('click', handlePlayButton);
 playButton.addEventListener('touchstart', handlePlayButton);
+
+const settings_button = document.getElementById('settings-button');
+settings_button.addEventListener('click', (e) => {
+    e.preventDefault();
+    utils.openPopup('settings-popup');
+});
 
 function handlePlayButton(e) {
     e.preventDefault();

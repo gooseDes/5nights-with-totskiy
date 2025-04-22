@@ -11,6 +11,7 @@ export class MenuScene extends Scene {
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
     this.to_add_to_scene.push(ambientLight);
     this.light = new THREE.SpotLight(0xffffff, 10, 1000, Math.PI, 0.1, 2);
+    this.light.position.set(0, 10, 0);
     this.light.target.position.set(0, 0, 0);
     this.to_add_to_scene.push(this.light);
     this.to_add_to_scene.push(this.light.target);
@@ -24,6 +25,6 @@ export class MenuScene extends Scene {
   update() {
     super.update();
     this.camera.rotation.y = Math.sin(performance.now()*0.000001)*360;
-    this.light.intensity = Math.cos(performance.now()*0.001)*5+10;
+    this.light.intensity = Math.cos(performance.now()*0.001)*40+50;
   }
 }

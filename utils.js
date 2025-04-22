@@ -46,3 +46,23 @@ export function generateIndex(geometry) {
   for (let i = 0; i < count; i++) index[i] = i;
   return index;
 }
+
+export function openPopup(popupId) {
+  const popup = document.getElementById(popupId);
+  if (popup) {
+    popup.classList.remove('popup-hide');
+    popup.style.visibility = 'visible';
+    popup.classList.add('popup-show');
+  }
+}
+
+export function closePopup(popupId) {
+  const popup = document.getElementById(popupId);
+  if (popup) {
+    popup.classList.remove('popup-show');
+    popup.classList.add('popup-hide');
+    setTimeout(() => {
+      popup.style.visibility = 'hidden';
+    }, 300);
+  }
+}
