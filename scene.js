@@ -9,6 +9,7 @@ export class Scene {
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setSize(window.innerWidth*utils.global.resolution, window.innerHeight*utils.global.resolution, false);
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.physics = physics;
@@ -58,6 +59,7 @@ export class Scene {
 
     start() {
         document.body.appendChild(this.renderer.domElement);
+        this.renderer.setSize(window.innerWidth*utils.global.resolution, window.innerHeight*utils.global.resolution, false);
         this.running = true;
         this.renderer.setAnimationLoop(() => {
             if (this.running) {
@@ -98,6 +100,7 @@ export class Scene {
           this.camera.aspect = window.innerWidth / window.innerHeight;
           this.camera.updateProjectionMatrix();
           this.renderer.setSize(window.innerWidth, window.innerHeight);
+          this.renderer.setSize(window.innerWidth*utils.global.resolution, window.innerHeight*utils.global.resolution, false);
         });   
     }
 

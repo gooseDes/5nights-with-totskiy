@@ -1,6 +1,7 @@
 const THREE = await import('https://esm.sh/three@0.175.0');
 import * as CANNON from 'https://cdn.skypack.dev/cannon-es';
 import { ItemController } from './item_controller.js';
+import * as utils from './utils.js';
 
 export class PlayerController {
   constructor(camera, flashlight, scene, renderer, world) {
@@ -76,6 +77,8 @@ export class PlayerController {
     this.inventory = [];
 
     this.since_started_walking = 0;
+
+    this.jumpscareSound = new Audio('sounds/jumpscare.ogg');
 
     this.lastUpdateTime = performance.now();
     this.start();
@@ -241,6 +244,28 @@ export class PlayerController {
     throwDir.y += 10;
     item.sphereBody.velocity.set(throwDir.x, throwDir.y, throwDir.z);
     this.inventory.shift();
+  }
+
+  addEnemy(enemy) {
+    this.enemy = enemy;
+    this.playerBody.addEventListener('collide', (event) => {
+      if (event.body === this.enemy.body) {
+        this.playerBody.position.set(0, 5, 0);
+        this.playerBody.velocity.set(0, 0, 0);
+        utils.playSound(this.jumpscareSound);
+        document.getElementById('jumpscare').style.background = 'url("images/jumpscare.png") no-repeat center center';
+        document.getElementById('jumpscare').style.backgroundSize = '100% 100%';
+        setTimeout(() => {
+          document.getElementById('jumpscare').style.opacity = 0;
+          setTimeout(() => {
+            document.getElementById('jumpscare').style.background = 'none';
+            document.getElementById('jumpscare').style.opacity = 1;
+          }, 500);
+        }, 3000);
+        this.enemy.body.position.set(100, 3, 0);
+        this.enemy.body.velocity.set(0, 0, 0);
+      }
+    });
   }
 
   update() {
