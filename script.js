@@ -69,6 +69,12 @@ settings_button.addEventListener('click', (e) => {
     });
 });
 
+const info_button = document.getElementById('info-button');
+info_button.addEventListener('click', (e) => {
+    e.preventDefault();
+    utils.openPopup('info-popup');
+});
+
 function handlePlayButton(e) {
     e.preventDefault();
     playButton.classList.add('play-button-anim');
