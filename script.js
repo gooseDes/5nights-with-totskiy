@@ -61,12 +61,18 @@ settings_button.addEventListener('click', (e) => {
         utils.global.volume = e.target.value / 100;
         localStorage.setItem('volume', utils.global.volume);
     });
-    const graphics_slider = document.getElementById('graphics-slider');
-    graphics_slider.value = utils.global.graphics * 100;
-    graphics_slider.addEventListener('input', (e) => {
-        utils.global.graphics = e.target.value / 100;
-        localStorage.setItem('graphics', utils.global.graphics);
+    const resolution_slider = document.getElementById('resolution-slider');
+    resolution_slider.value = utils.global.resolution;
+    resolution_slider.addEventListener('input', (e) => {
+        utils.global.resolution = e.target.value;
+        localStorage.setItem('resolution', utils.global.resolution);
     });
+});
+
+const info_button = document.getElementById('info-button');
+info_button.addEventListener('click', (e) => {
+    e.preventDefault();
+    utils.openPopup('info-popup');
 });
 
 function handlePlayButton(e) {

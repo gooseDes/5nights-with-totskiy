@@ -68,6 +68,13 @@ export function closePopup(popupId) {
 }
 
 export const global = {
-  volume: localStorage.getItem('volume'),
-  graphics: localStorage.getItem('graphics'),
+  volume: localStorage.getItem('volume') ?? "1",
+  resolution: localStorage.getItem('resolution') ?? "1",
+}
+
+export function playSound(audio) {
+  audio.volume = global.volume;
+  audio.play().catch((error) => {
+    console.error('Error playing sound:', error);
+  });
 }

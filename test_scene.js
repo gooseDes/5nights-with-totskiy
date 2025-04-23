@@ -25,9 +25,7 @@ export class TestScene extends Scene {
     this.flashlight.target.position.set(0, 0, -1);
     this.to_add_to_scene.push(this.flashlight);
     this.to_add_to_scene.push(this.flashlight.target);
-
-    this.jumpscareSound = new Audio('sounds/jumpscare.ogg');
-    
+        
     utils.loader.load('models/totskiy.glb', (gltf) => {
       this.totskiy = gltf.scene;
       this.totskiy.position.set(116, -1.5, 0);
@@ -51,26 +49,7 @@ export class TestScene extends Scene {
       this.enemy.body.position.set(100, 2, 0);
       this.enemy.start();
       this.to_update.push(this.enemy);
-
-      this.player.playerBody.addEventListener('collide', (event) => {
-        if (event.body === this.enemy.body) {
-          this.player.playerBody.position.set(0, 5, 0);
-          this.player.playerBody.velocity.set(0, 0, 0);
-          this.jumpscareSound.volume = 0.1;
-          this.jumpscareSound.play();
-          document.getElementById('jumpscare').style.background = 'url("images/jumpscare.png") no-repeat center center';
-          document.getElementById('jumpscare').style.backgroundSize = '100% 100%';
-          setTimeout(() => {
-            document.getElementById('jumpscare').style.opacity = 0;
-            setTimeout(() => {
-              document.getElementById('jumpscare').style.background = 'none';
-              document.getElementById('jumpscare').style.opacity = 1;
-            }, 500);
-          }, 3000);
-          this.enemy.body.position.set(100, 3, 0);
-          this.enemy.body.velocity.set(0, 0, 0);
-        }
-      });
+      this.player.addEnemy(this.enemy);
     
       const animate = () => {
           requestAnimationFrame(animate);
