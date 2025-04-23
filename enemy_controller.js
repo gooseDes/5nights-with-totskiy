@@ -88,7 +88,7 @@ export class EnemyController {
     let groupID = this.pathfinder.getGroup(this.ZONE, start);
   
     this.path = this.pathfinder.findPath(start, this.target, this.ZONE, groupID) || [];
-    if (this.path.length <= 0) {
+    /*if (this.path.length <= 0) {
       const zone = this.pathfinder.zones[this.ZONE];
       let minDist = Infinity;
       let closestGroup = null;
@@ -115,7 +115,7 @@ export class EnemyController {
         this.path = [];
         return;
       }
-    }
+    }*/
     this.currentPathIndex = 0;
   }
   
@@ -144,7 +144,16 @@ export class EnemyController {
         }
       }
     } else {
-      this.body.velocity.set(0, 0, 0);
+      const bodyPos = new THREE.Vector3(this.body.position.x, 0, this.body.position.z);
+      const direction = new THREE.Vector3().subVectors(this.target, bodyPos);
+      direction.y = 0;
+      if (direction.lengthSq() > 0.001) {
+        direction.normalize();
+        this.body.velocity.x = direction.x * this.moveSpeed;
+        this.body.velocity.z = direction.z * this.moveSpeed;
+      } else {
+        this.body.velocity.set(0, 0, 0);
+      }
     }
 
     this.mesh.position.copy(this.body.position);
