@@ -51,8 +51,11 @@ export function openPopup(popupId) {
   const popup = document.getElementById(popupId);
   if (popup) {
     popup.classList.remove('popup-hide');
-    popup.style.visibility = 'visible';
+    popup.style.display = 'flex';
     popup.classList.add('popup-show');
+    document.querySelectorAll('.mobile-ui').forEach((el) => {
+      el.style.translate = '0 100vh';
+    });
   }
 }
 
@@ -61,8 +64,11 @@ export function closePopup(popupId) {
   if (popup) {
     popup.classList.remove('popup-show');
     popup.classList.add('popup-hide');
+    document.querySelectorAll('.mobile-ui').forEach((el) => {
+      el.style.translate = '0 0';
+    });
     setTimeout(() => {
-      popup.style.visibility = 'hidden';
+      popup.style.display = 'none';
     }, 300);
   }
 }

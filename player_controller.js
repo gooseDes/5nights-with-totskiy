@@ -159,14 +159,14 @@ export class PlayerController {
     });
   
     const throwButton = document.getElementById('throw-button');
-    throwButton.style.visibility = 'visible';
+    throwButton.style.display = 'flex';
     throwButton.addEventListener('touchstart', (e) => {
       e.preventDefault();
       this.throwItem();
     });
   
     const pickButton = document.getElementById('pick-button');
-    pickButton.style.visibility = 'visible';
+    pickButton.style.display = 'flex';
     pickButton.addEventListener('touchstart', (e) => {
       e.preventDefault();
       this.tryPickUpItem();

@@ -127,7 +127,6 @@
       display: flex;
       font-family: 'Baloo 2';
       color: rgba(255, 255, 255, 0.8);
-      visibility: hidden;
     }
     #jumpscare {
       background-size: 100% 100%;
@@ -149,13 +148,16 @@
       display: flex;
       font-family: 'Baloo 2';
       color: rgba(255, 255, 255, 0.8);
-      visibility: hidden;
     }
     #throw-button, #pick-button {
+      display: none;
       pointer-events: auto;
     }
     body, #joystick-zone, #throw-button, #pick-button {
       touch-action: none;
+    }
+    .mobile-ui {
+      transition: translate 0.5s ease-in-out;
     }
     #disclaimer {
       position: fixed;
@@ -199,7 +201,7 @@
       transform: translateY(2svh);
     }
     .popup {
-      z-index: 10000;
+      z-index: 99999999999999999999;
       position: fixed;
       top: 50%;
       left: 50%;
@@ -215,10 +217,10 @@
       translate: -50% -50%;
       flex-direction: column;
       overflow: hidden;
-      visibility: hidden;
+      display: none;
     }
     .popup-header {
-      z-index: 10000;
+      z-index: 9999;
       font-size: 8svh;
       font-weight: 900;
       margin-bottom: 2svh;
@@ -228,7 +230,7 @@
       background-color: rgb(22, 22, 22);
     }
     .popup-content {
-      z-index: 10000;
+      z-index: 9999;
       font-size: 5svh;
       text-align: center;
       width: 100%;
@@ -263,7 +265,7 @@
       }
     }
     .popup-close {
-      z-index: 10000;
+      z-index: 9999;
       position: absolute;
       top: 2svh;
       right: 2svh;
@@ -284,7 +286,7 @@
       scale: 0.9;
     }
     .setting-name-slider {
-      z-index: 10000;
+      z-index: 9999;
       width: 100%;
       height: min-content;
       padding: 2svh 0;
@@ -297,7 +299,7 @@
       border-radius: 2svh;
     }
     .setting-name {
-      z-index: 10000;
+      z-index: 9999;
       width: fit-content;
       height: 10%;
       text-align: center;
@@ -309,7 +311,7 @@
       padding: 0svh 2svh;
     }
     .slider {
-      z-index: 10000;
+      z-index: 9999;
       appearance: none;
       -webkit-appearance: none;
       width: 100%;
@@ -349,9 +351,9 @@
       }
     }
   </script>    
-  <div id="joystick-zone" style="position: fixed; bottom: 100px; left: 100px; width: 150px; height: 150px;"></div>
-  <button id="throw-button" style="visibility: hidden;">Throw</button>
-  <button id="pick-button" style="visibility: hidden;">Pick Up</button>
+  <div id="joystick-zone" style="position: fixed; bottom: 100px; left: 100px; width: 150px; height: 150px;" class="mobile-ui"></div>
+  <button id="throw-button" class="mobile-ui">Throw</button>
+  <button id="pick-button" class="mobile-ui">Pick Up</button>
   <div class="full_center">
     <div id="pointer"></div>
   </div>
