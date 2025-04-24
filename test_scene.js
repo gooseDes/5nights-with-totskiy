@@ -73,6 +73,7 @@ export class TestScene extends Scene {
     utils.loader.load('models/monkey.glb', (gltf) => {
       for (let i = 0; i < 50; i++) {
         const obj = new ItemController(this.scene, this.world, Math.random()/3 + 0.2, new THREE.Vector3(Math.random() * 10 - 5, Math.random() * 10 + 5, Math.random() * 10 - 5), gltf.scene.children[0].clone());
+        obj.setCameras([this.camera]);
         this.to_update.push(obj);
         this.test_items.push(obj);
       }
@@ -81,6 +82,7 @@ export class TestScene extends Scene {
     utils.loader.load('models/ball.glb', (gltf) => {
       for (let i = 0; i < 50; i++) {
         const obj = new ItemController(this.scene, this.world, Math.random()/3 + 0.2, new THREE.Vector3(Math.random() * 10 - 5, Math.random() * 10 + 5, Math.random() * 10 - 5), gltf.scene.children[0].clone());
+        obj.setCameras([this.camera]);
         this.to_update.push(obj);
         this.test_items.push(obj);
       }

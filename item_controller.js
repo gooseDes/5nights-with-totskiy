@@ -45,11 +45,45 @@ export class ItemController {
 
     this.world.addBody(this.sphereBody);
     this.lastUpdateTime = performance.now();
+    this.cameras = [];
+    this._frustum = new THREE.Frustum();
+    this._projScreenMatrix = new THREE.Matrix4();
+  }
+
+  setCameras(cameras) {
+    this.cameras = cameras || [];
+  }
+
+  isWatchedByAnyCamera() {
+    if (!this.cameras.length) return true;
+    for (const cam of this.cameras) {
+      this._projScreenMatrix.multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse);
+      this._frustum.setFromProjectionMatrix(this._projScreenMatrix);
+      if (this._frustum.intersectsObject(this.mesh)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   update() {
     this.mesh.position.copy(this.sphereBody.position);
     this.mesh.quaternion.copy(this.sphereBody.quaternion);
+
+    if (this.sphereBody.type === CANNON.Body.DYNAMIC) {
+      const velocity = this.sphereBody.velocity.length();
+      const angular = this.sphereBody.angularVelocity.length();
+      const threshold = 0.05;
+      if (
+        !this.isWatchedByAnyCamera() &&
+        velocity < threshold &&
+        angular < threshold
+      ) {
+        this.sphereBody.sleep();
+      } else if (this.isWatchedByAnyCamera()) {
+        this.sphereBody.wakeUp();
+      }
+    }
 
     const now = performance.now();
     const dt = (now - this.lastUpdateTime) / 1000;
