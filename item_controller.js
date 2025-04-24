@@ -73,7 +73,7 @@ export class ItemController {
     if (this.sphereBody.type === CANNON.Body.DYNAMIC) {
       const velocity = this.sphereBody.velocity.length();
       const angular = this.sphereBody.angularVelocity.length();
-      const threshold = 0.05;
+      const threshold = 0.005;
       if (
         !this.isWatchedByAnyCamera() &&
         velocity < threshold &&

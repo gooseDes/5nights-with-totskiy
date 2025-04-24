@@ -1,5 +1,8 @@
-const THREE = await import('https://esm.sh/three@0.175.0');
-const CANNON = await import('https://cdn.skypack.dev/cannon-es');
+import * as CANNON from 'https://cdn.skypack.dev/cannon-es';
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import * as utils from './utils.js';
 
 export class Scene {
@@ -7,11 +10,18 @@ export class Scene {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0x222244);
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setSize(window.innerWidth*utils.global.resolution, window.innerHeight*utils.global.resolution, false);
+        this.renderer.setSize(window.innerWidth * utils.global.resolution, window.innerHeight * utils.global.resolution, false);
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        this.composer = new EffectComposer(this.renderer);
+        this.composer.addPass(new RenderPass(this.scene, this.camera));
+
+        this.bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.0, 0.4, 0.08);
+        this.composer.addPass(this.bloomPass);
+
         this.physics = physics;
         this.default_mesh_path = default_mesh_path;
         this.running = false;
@@ -23,8 +33,7 @@ export class Scene {
             this.world = new CANNON.World({
                 gravity: new CANNON.Vec3(0, -9.82, 0)
             });
-        }
-        else {
+        } else {
             this.world = null;
         }
 
@@ -36,7 +45,6 @@ export class Scene {
         utils.loader.load(
             this.default_mesh_path,
             (gltf) => {
-                //gltf.scene.position.set(0, -2, 0)
                 this.default_mesh = gltf.scene;
                 gltf.scene.traverse((child) => {
                     if (child.isMesh) {
@@ -59,7 +67,7 @@ export class Scene {
 
     start() {
         document.body.appendChild(this.renderer.domElement);
-        this.renderer.setSize(window.innerWidth*utils.global.resolution, window.innerHeight*utils.global.resolution, false);
+        this.renderer.setSize(window.innerWidth * utils.global.resolution, window.innerHeight * utils.global.resolution, false);
         this.running = true;
         this.renderer.setAnimationLoop(() => {
             if (this.running) {
@@ -104,11 +112,11 @@ export class Scene {
         }
         
         window.addEventListener('resize', () => {
-          this.camera.aspect = window.innerWidth / window.innerHeight;
-          this.camera.updateProjectionMatrix();
-          this.renderer.setSize(window.innerWidth, window.innerHeight);
-          this.renderer.setSize(window.innerWidth*utils.global.resolution, window.innerHeight*utils.global.resolution, false);
-        });   
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.renderer.setSize(window.innerWidth * utils.global.resolution, window.innerHeight * utils.global.resolution, false);
+        });
     }
 
     update() {
@@ -122,7 +130,7 @@ export class Scene {
     }
 
     render() {
-        this.renderer.render(this.scene, this.camera);
+        this.composer.render();
     }
 
     stop() {
