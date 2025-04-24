@@ -39,6 +39,10 @@ export class ItemController {
     this.world.addContactMaterial(contactMaterial);
     this.sphereBody.material = physicsMaterial;
 
+    this.sphereBody.allowSleep = true;
+    this.sphereBody.sleepSpeedLimit = 0.1;
+    this.sphereBody.sleepTimeLimit = 1;
+
     this.world.addBody(this.sphereBody);
     this.lastUpdateTime = performance.now();
   }

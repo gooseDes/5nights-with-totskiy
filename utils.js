@@ -70,6 +70,7 @@ export function closePopup(popupId) {
 export const global = {
   volume: localStorage.getItem('volume') ?? "1",
   resolution: localStorage.getItem('resolution') ?? "1",
+  physics: localStorage.getItem('physics') ?? "1",
 }
 
 export function playSound(audio) {

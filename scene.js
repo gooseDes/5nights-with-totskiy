@@ -76,8 +76,15 @@ export class Scene {
 
         function fullScreenAndPointerLock() {
             if (!('ontouchstart' in window)) {
-                document.querySelector('canvas').requestPointerLock();
-                this.renderer.domElement.requestPointerLock();
+                try {
+                    this.renderer.domElement.requestPointerLock();
+                } catch (e) {
+                    document.querySelectorAll('canvas').forEach((e) => {
+                        if (!e.classList.contains('stats-panel')) {
+                            e.requestPointerLock();
+                        }
+                    });
+                }
             }
             if (document.documentElement.requestFullscreen) {
               document.documentElement.requestFullscreen();
@@ -107,7 +114,7 @@ export class Scene {
     update() {
         if (this.physics) {
             const delta = this.clock.getDelta();
-            this.world.step(1 / 60, delta, 3);
+            this.world.step(1 / 60, delta, 1);
         }
         this.to_update.forEach((item) => {
             item.update();

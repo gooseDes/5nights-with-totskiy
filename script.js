@@ -1,6 +1,19 @@
 import { MenuScene } from "./menu_scene.js";
 import { TestScene } from "./test_scene.js";
+import Stats from 'stats.js';
 import * as utils from './utils.js';
+
+const stats = new Stats();
+stats.showPanel(0);
+stats.dom.style.position = 'fixed';
+stats.dom.style.top = '0px';
+stats.dom.style.left = '0px';
+stats.dom.style.width = '100px';
+stats.dom.style.height = '100px';
+stats.dom.style.zIndex = '10000';
+stats.dom.style.pointerEvents = 'none';
+stats.dom.classList.add('stats-panel');
+document.body.appendChild(stats.dom);
 
 var scenes = {};
 
@@ -67,6 +80,12 @@ settings_button.addEventListener('click', (e) => {
         utils.global.resolution = e.target.value;
         localStorage.setItem('resolution', utils.global.resolution);
     });
+    const physics_slider = document.getElementById('physics-slider');
+    physics_slider.value = utils.global.physics;
+    physics_slider.addEventListener('input', (e) => {
+        utils.global.physics = e.target.value;
+        localStorage.setItem('physics', utils.global.physics);
+    });
 });
 
 const info_button = document.getElementById('info-button');
@@ -88,7 +107,7 @@ function handlePlayButton(e) {
 }
 
 function update() {
-    requestAnimationFrame(update);
+    stats.begin();
     if (scenes['menu'].running) {
         menu_scene.update();
         menu_scene.render();
@@ -97,6 +116,8 @@ function update() {
         test_scene.update();
         test_scene.render();
     }
+    stats.end();
+    requestAnimationFrame(update);
 }
 
 update();
