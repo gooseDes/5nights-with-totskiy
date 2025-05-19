@@ -134,10 +134,6 @@ function update() {
         menu_scene.update();
         menu_scene.render();
     }
-    if (scenes['fixer'].running) {
-        fixer_scene.update();
-        fixer_scene.render();
-    }
     if (scenes['test'].running) {
         test_scene.update();
         test_scene.render();

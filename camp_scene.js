@@ -3,7 +3,6 @@ import * as utils from './utils.js';
 
 import { Scene } from "./scene.js";
 import { PlayerController } from "./player_controller.js";
-import { ItemController } from "./item_controller.js";
 import { EnemyController } from './enemy_controller.js';
 
 export class CampScene extends Scene {
@@ -42,7 +41,7 @@ export class CampScene extends Scene {
       } else {
           console.warn('Animation clip not found in the loaded model.');
       }
-      this.enemy = new EnemyController(this.scene, this.renderer, this.world, this.totskiy, "models/scenes/test/navmesh.glb");
+      this.enemy = new EnemyController(this.scene, this.renderer, this.world, this.totskiy, "models/scenes/camp/navmesh.glb");
       this.enemy.mesh.castShadow = true;
       this.enemy.mesh.receiveShadow = true;
       this.enemy.body.position.set(100, 2, 0);
@@ -70,9 +69,8 @@ export class CampScene extends Scene {
 
   update() {
     super.update();
-    this.enemy.setTarget(this.player.playerBody.position);
     if (this.player.keyState.space) {
-      this.enemy.setTarget(new THREE.Vector3(0, 0, 0));
+      this.enemy.setTarget(this.player.playerBody.position);
     }
   }
 }
