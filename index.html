@@ -11,7 +11,23 @@
   <style>
     html { font-family: 'Baloo 2'; }
     body { margin: 0; overflow: hidden; background-color: black; font-family: 'Baloo 2'; }
-    canvas { display: block; }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      display: block;
+      pointer-events: none;
+    }
+    .stats-panel {
+      position: fixed;
+      top: 2svh;
+      left: 2svh;
+      width: 20svh;
+      height: 20svh;
+    }
     ::-webkit-scrollbar {
       width: 8px;
     }
@@ -77,6 +93,25 @@
       transform-origin: center;
       touch-action: auto;
     }
+    #scene-button {
+      z-index: 10000;
+      font-weight: 900;
+      font-size: 1svh;
+      font-family: 'Baloo 2';
+      padding: 1vh 1svh;
+      color: white;
+      background-color: rgb(0, 0, 0, 0.5);
+      border: none;
+      border: 0.5svh #fff solid;
+      border-radius: 1svh;
+      transition: all 0.2s ease;
+      transform-origin: center;
+      touch-action: auto;
+      margin: 1svh;
+    }
+    #menu {
+      flex-direction: column;
+    }
     button:hover {
       scale: 1.1;
     }
@@ -110,6 +145,7 @@
       pointer-events: none;
       width: 1svh;
       aspect-ratio: 1/1;
+      z-index: 1000;
     }
     #throw-button {
       z-index: 998;
@@ -362,6 +398,7 @@
   <div class="full_center" id="jumpscare"></div>
   <div class="full_center" id="menu">
     <button id="play-button"><i class="fa-solid fa-play"></i> Play</button>
+    <button id="scene-button"><i class="fa-solid fa-play"></i> Start Any Scene</button>
     <p id="disclaimer">I recomend u to rotate your device to landscape and reload page</p>
     <div id="top-panel">
       <button class="top-panel-button" id="settings-button"><i class="fa-solid fa-gear"></i></button>

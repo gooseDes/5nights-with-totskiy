@@ -1,6 +1,5 @@
 const THREE = await import('https://esm.sh/three@0.175.0');
 import { Scene } from './scene.js';
-import * as utils from './utils.js';
 
 export class MenuScene extends Scene {
   constructor() {

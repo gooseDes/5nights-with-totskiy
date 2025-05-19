@@ -139,7 +139,9 @@ export class Scene {
         document.body.removeChild(this.renderer.domElement);
         this.scene.clear();
         this.to_start.forEach((item) => {
-            item.stop();
+            try {
+                item.stop();
+            } catch (e) {}
         });
     }
 }

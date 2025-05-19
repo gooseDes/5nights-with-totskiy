@@ -1,12 +1,13 @@
 import { MenuScene } from "./menu_scene.js";
 import { TestScene } from "./test_scene.js";
+import { CampScene } from "./camp_scene.js";
 import Stats from 'stats.js';
 import * as utils from './utils.js';
 
 const stats = new Stats();
 stats.showPanel(0);
 stats.dom.style.position = 'fixed';
-stats.dom.style.top = '2svh';
+stats.dom.style.top = '-200svh';
 stats.dom.style.left = '2svh';
 stats.dom.style.width = '100px';
 stats.dom.style.height = '100px';
@@ -18,14 +19,18 @@ document.body.appendChild(stats.dom);
 var scenes = {};
 
 const menu_scene = new MenuScene();
-
 scenes['menu'] = menu_scene;
-
-menu_scene.start();
+setTimeout(() =>{
+    menu_scene.start()
+}, 0);
 
 const test_scene = new TestScene();
-
 scenes['test'] = test_scene;
+
+const camp_scene = new CampScene();
+scenes['camp'] = camp_scene;
+
+window.scenes = scenes;
 
 document.querySelectorAll('.top-panel-button').forEach((button) => {
     const handleEnter = () => {
@@ -59,10 +64,13 @@ document.querySelectorAll('.popup-close').forEach((button) => {
 
 
 const playButton = document.getElementById('play-button');
+const sceneButton = document.getElementById('scene-button');
 const menu = document.getElementById('menu');
 
 playButton.addEventListener('click', handlePlayButton);
 playButton.addEventListener('touchstart', handlePlayButton);
+sceneButton.addEventListener('click', handleSceneButton);
+sceneButton.addEventListener('touchstart', handleSceneButton);
 
 const settings_button = document.getElementById('settings-button');
 settings_button.addEventListener('click', (e) => {
@@ -101,9 +109,23 @@ function handlePlayButton(e) {
         playButton.style.display = 'none';
         menu.style.display = 'none';
         menu_scene.stop();
-        
         test_scene.start();
     }, 1000);
+}
+
+function handleSceneButton(e) {
+    e.preventDefault();
+    let scene = prompt("Enter the scene name to load:");
+    if (scene) {
+        scene = scene.trim().toLowerCase();
+        if (scenes[scene]) {
+            menu.style.display = 'none';
+            menu_scene.stop();
+            scenes[scene].start();
+        } else {
+            alert("Scene not found!");
+        }
+    }
 }
 
 function update() {
@@ -112,9 +134,17 @@ function update() {
         menu_scene.update();
         menu_scene.render();
     }
+    if (scenes['fixer'].running) {
+        fixer_scene.update();
+        fixer_scene.render();
+    }
     if (scenes['test'].running) {
         test_scene.update();
         test_scene.render();
+    }
+    if (scenes['camp'].running) {
+        camp_scene.update();
+        camp_scene.render();
     }
     stats.end();
     requestAnimationFrame(update);
